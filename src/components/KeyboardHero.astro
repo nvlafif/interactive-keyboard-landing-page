@@ -1,0 +1,1189 @@
+---
+import { getWaUrl } from '../data/site';
+
+interface KeyItem {
+  code: string;
+  label: string;
+  sub?: string;
+  units: number;
+  tone?: 'alpha' | 'mod' | 'accent' | 'accentAlt' | 'space';
+  isLarge?: boolean;
+  gapAfter?: number;
+  isKnob?: boolean;
+}
+
+/**
+ * Tata letak presisi 75% Fantech Atom Pro83 (MK913):
+ * 6 baris x total 16u per baris, 82 tombol fisik + 1 Multi-Function Rotary Knob = 83 kontrol.
+ */
+const keyboardRows: KeyItem[][] = [
+  // Row 1: Function Row + Del + Rotary Knob (Total 16u)
+  [
+    { code: 'Escape', label: 'ESC', units: 1, tone: 'accent', gapAfter: 0.25 },
+    { code: 'F1', label: 'F1', units: 1, tone: 'alpha' },
+    { code: 'F2', label: 'F2', units: 1, tone: 'alpha' },
+    { code: 'F3', label: 'F3', units: 1, tone: 'alpha' },
+    { code: 'F4', label: 'F4', units: 1, tone: 'alpha', gapAfter: 0.25 },
+    { code: 'F5', label: 'F5', units: 1, tone: 'mod' },
+    { code: 'F6', label: 'F6', units: 1, tone: 'mod' },
+    { code: 'F7', label: 'F7', units: 1, tone: 'mod' },
+    { code: 'F8', label: 'F8', units: 1, tone: 'mod', gapAfter: 0.25 },
+    { code: 'F9', label: 'F9', units: 1, tone: 'alpha' },
+    { code: 'F10', label: 'F10', units: 1, tone: 'alpha' },
+    { code: 'F11', label: 'F11', units: 1, tone: 'alpha' },
+    { code: 'F12', label: 'F12', units: 1, tone: 'alpha', gapAfter: 0.25 },
+    { code: 'Delete', label: 'DEL', units: 1, tone: 'mod' },
+    { code: 'AudioVolumeMute', label: 'KNOB', units: 1, isKnob: true },
+  ],
+  // Row 2: Number Row + Backspace + Home (Total 16u)
+  [
+    { code: 'Backquote', label: '~', units: 1, tone: 'mod' },
+    { code: 'Digit1', label: '1', units: 1, tone: 'alpha' },
+    { code: 'Digit2', label: '2', units: 1, tone: 'alpha' },
+    { code: 'Digit3', label: '3', units: 1, tone: 'alpha' },
+    { code: 'Digit4', label: '4', units: 1, tone: 'alpha' },
+    { code: 'Digit5', label: '5', units: 1, tone: 'alpha' },
+    { code: 'Digit6', label: '6', units: 1, tone: 'alpha' },
+    { code: 'Digit7', label: '7', units: 1, tone: 'alpha' },
+    { code: 'Digit8', label: '8', units: 1, tone: 'alpha' },
+    { code: 'Digit9', label: '9', units: 1, tone: 'alpha' },
+    { code: 'Digit0', label: '0', units: 1, tone: 'alpha' },
+    { code: 'Minus', label: '-', units: 1, tone: 'alpha' },
+    { code: 'Equal', label: '=', units: 1, tone: 'alpha' },
+    { code: 'Backspace', label: '⌫', units: 2, tone: 'mod', isLarge: true },
+    { code: 'Home', label: 'HOME', units: 1, tone: 'mod' },
+  ],
+  // Row 3: QWERTY + PgUp (Total 16u)
+  [
+    { code: 'Tab', label: 'TAB', units: 1.5, tone: 'mod', isLarge: true },
+    { code: 'KeyQ', label: 'Q', units: 1, tone: 'alpha' },
+    { code: 'KeyW', label: 'W', units: 1, tone: 'alpha' },
+    { code: 'KeyE', label: 'E', units: 1, tone: 'alpha' },
+    { code: 'KeyR', label: 'R', units: 1, tone: 'alpha' },
+    { code: 'KeyT', label: 'T', units: 1, tone: 'alpha' },
+    { code: 'KeyY', label: 'Y', units: 1, tone: 'alpha' },
+    { code: 'KeyU', label: 'U', units: 1, tone: 'alpha' },
+    { code: 'KeyI', label: 'I', units: 1, tone: 'alpha' },
+    { code: 'KeyO', label: 'O', units: 1, tone: 'alpha' },
+    { code: 'KeyP', label: 'P', units: 1, tone: 'alpha' },
+    { code: 'BracketLeft', label: '[', units: 1, tone: 'alpha' },
+    { code: 'BracketRight', label: ']', units: 1, tone: 'alpha' },
+    { code: 'Backslash', label: '\\', units: 1.5, tone: 'mod' },
+    { code: 'PageUp', label: 'PGUP', units: 1, tone: 'mod' },
+  ],
+  // Row 4: ASDF + Enter + PgDn (Total 16u)
+  [
+    { code: 'CapsLock', label: 'CAPS', units: 1.75, tone: 'mod', isLarge: true },
+    { code: 'KeyA', label: 'A', units: 1, tone: 'alpha' },
+    { code: 'KeyS', label: 'S', units: 1, tone: 'alpha' },
+    { code: 'KeyD', label: 'D', units: 1, tone: 'alpha' },
+    { code: 'KeyF', label: 'F', sub: '_', units: 1, tone: 'alpha' },
+    { code: 'KeyG', label: 'G', units: 1, tone: 'alpha' },
+    { code: 'KeyH', label: 'H', units: 1, tone: 'alpha' },
+    { code: 'KeyJ', label: 'J', sub: '_', units: 1, tone: 'alpha' },
+    { code: 'KeyK', label: 'K', units: 1, tone: 'alpha' },
+    { code: 'KeyL', label: 'L', units: 1, tone: 'alpha' },
+    { code: 'Semicolon', label: ';', units: 1, tone: 'alpha' },
+    { code: 'Quote', label: "'", units: 1, tone: 'alpha' },
+    { code: 'Enter', label: 'ENTER', units: 2.25, tone: 'accentAlt', isLarge: true },
+    { code: 'PageDown', label: 'PGDN', units: 1, tone: 'mod' },
+  ],
+  // Row 5: ZXCV + Up Arrow + End (Total 16u)
+  [
+    { code: 'ShiftLeft', label: 'SHIFT', units: 2.25, tone: 'mod', isLarge: true },
+    { code: 'KeyZ', label: 'Z', units: 1, tone: 'alpha' },
+    { code: 'KeyX', label: 'X', units: 1, tone: 'alpha' },
+    { code: 'KeyC', label: 'C', units: 1, tone: 'alpha' },
+    { code: 'KeyV', label: 'V', units: 1, tone: 'alpha' },
+    { code: 'KeyB', label: 'B', units: 1, tone: 'alpha' },
+    { code: 'KeyN', label: 'N', units: 1, tone: 'alpha' },
+    { code: 'KeyM', label: 'M', units: 1, tone: 'alpha' },
+    { code: 'Comma', label: ',', units: 1, tone: 'alpha' },
+    { code: 'Period', label: '.', units: 1, tone: 'alpha' },
+    { code: 'Slash', label: '/', units: 1, tone: 'alpha' },
+    { code: 'ShiftRight', label: 'SHIFT', units: 1.75, tone: 'mod', isLarge: true },
+    { code: 'ArrowUp', label: '↑', units: 1, tone: 'accent' },
+    { code: 'End', label: 'END', units: 1, tone: 'mod' },
+  ],
+  // Row 6: Bottom Modifiers + Space + Arrows (Total 16u)
+  [
+    { code: 'ControlLeft', label: 'CTRL', units: 1.25, tone: 'mod' },
+    { code: 'MetaLeft', label: 'WIN', units: 1.25, tone: 'mod' },
+    { code: 'AltLeft', label: 'ALT', units: 1.25, tone: 'mod' },
+    { code: 'Space', label: '', units: 6.25, tone: 'space', isLarge: true },
+    { code: 'AltRight', label: 'ALT', units: 1, tone: 'mod' },
+    { code: 'Fn', label: 'FN', units: 1, tone: 'mod' },
+    { code: 'ControlRight', label: 'CTRL', units: 1, tone: 'mod' },
+    { code: 'ArrowLeft', label: '←', units: 1, tone: 'accent' },
+    { code: 'ArrowDown', label: '↓', units: 1, tone: 'accent' },
+    { code: 'ArrowRight', label: '→', units: 1, tone: 'accent' },
+  ],
+];
+---
+
+<section id="keyboard-test" class="relative overflow-hidden bg-slate-950 pt-10 pb-16 text-white sm:pt-16 sm:pb-24">
+  <!-- Efek Cahaya Latar -->
+  <div class="pointer-events-none absolute top-0 left-1/2 h-96 w-[48rem] -translate-x-1/2 rounded-full bg-cyan-500/15 blur-3xl"></div>
+
+  <div class="relative mx-auto max-w-6xl px-2.5 sm:px-6">
+    <!-- Headline & Kontrol -->
+    <div class="mx-auto max-w-3xl text-center">
+      <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-3.5 py-1 text-[11px] font-semibold text-cyan-300 sm:text-xs">
+        <span class="h-2 w-2 animate-pulse rounded-full bg-emerald-400"></span>
+        <span>Fantech Atom Pro83 (MK913) • 75% Tri-Mode RGB</span>
+      </div>
+
+      <h1 class="text-2xl leading-tight font-extrabold tracking-tight sm:text-5xl">
+        Fantech Atom Pro83 MK913
+        <span class="block bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-400 bg-clip-text text-transparent">
+          83-Key + Rotary Knob Interaktif
+        </span>
+      </h1>
+
+      <p class="mt-3 px-2 text-xs leading-relaxed text-slate-300 sm:mt-4 sm:text-base">
+        Uji langsung <strong>83 tombol &amp; rotary knob</strong> di bawah ini. Ketik lewat <strong>keyboard fisik</strong> atau <strong>ketuk langsung di layar HP/tablet</strong>.
+      </p>
+
+      <!-- Bar Kontrol: Switch, Varian Warna (Saturn / Mercury), RGB, Status -->
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-2.5 sm:mt-7 sm:gap-3">
+        <!-- Switch / Sound Profile Selector: 4 Kategori -->
+        <div
+          class="inline-flex flex-wrap justify-center rounded-xl border border-slate-800 bg-slate-900 p-1 text-xs font-semibold"
+          id="switch-selector"
+          role="group"
+          aria-label="Pilih kategori suara keyboard"
+        >
+          <button
+            type="button"
+            data-switch="clacky"
+            class="switch-btn touch-btn min-h-[38px] rounded-lg bg-cyan-600 px-3 py-1.5 text-white transition active:scale-95 sm:px-3.5"
+          >
+            Clacky
+          </button>
+          <button
+            type="button"
+            data-switch="clicky"
+            class="switch-btn touch-btn min-h-[38px] rounded-lg px-3 py-1.5 text-slate-400 transition hover:text-white active:scale-95 sm:px-3.5"
+          >
+            Clicky
+          </button>
+          <button
+            type="button"
+            data-switch="creamy"
+            class="switch-btn touch-btn min-h-[38px] rounded-lg px-3 py-1.5 text-slate-400 transition hover:text-white active:scale-95 sm:px-3.5"
+          >
+            Creamy
+          </button>
+          <button
+            type="button"
+            data-switch="thocky"
+            class="switch-btn touch-btn min-h-[38px] rounded-lg px-3 py-1.5 text-slate-400 transition hover:text-white active:scale-95 sm:px-3.5"
+          >
+            Thocky
+          </button>
+        </div>
+
+        <!-- Colorway Selector: Saturn vs Mercury -->
+        <div
+          class="inline-flex rounded-xl border border-slate-800 bg-slate-900 p-1 text-xs font-semibold"
+          id="colorway-selector"
+          role="group"
+          aria-label="Pilih varian warna MK913"
+        >
+          <button
+            type="button"
+            data-theme="saturn"
+            class="colorway-btn touch-btn min-h-[38px] rounded-lg bg-slate-700 px-3 py-1.5 text-white transition active:scale-95"
+          >
+            Saturn Grey
+          </button>
+          <button
+            type="button"
+            data-theme="mercury"
+            class="colorway-btn touch-btn min-h-[38px] rounded-lg px-3 py-1.5 text-slate-400 transition hover:text-white active:scale-95"
+          >
+            Mercury Black
+          </button>
+        </div>
+
+        <!-- RGB Side & Backlight Toggle -->
+        <button
+          type="button"
+          id="rgb-toggle-btn"
+          class="touch-btn min-h-[40px] rounded-xl border border-cyan-500/40 bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-cyan-300 transition hover:border-cyan-400 active:scale-95"
+        >
+          RGB: <span id="rgb-mode-label">Spectrum</span>
+        </button>
+
+        <!-- Active Key Display -->
+        <div class="flex min-h-[40px] items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/90 px-3.5 py-1.5 text-xs text-slate-400">
+          <span>Input:</span>
+          <code id="active-key-display" class="min-w-[5rem] rounded bg-slate-800 px-2 py-0.5 font-mono font-bold text-emerald-400">
+            Siap
+          </code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Keyboard Fantech Atom Pro83 MK913 (100% Fit & Responsif di HP, Tablet & Desktop) -->
+    <div id="keyboard-stage" class="mk913-stage relative mt-7 sm:mt-8 [perspective:1400px]">
+      <!-- Spotlight Iklan Produk di Belakang Keyboard -->
+      <div
+        aria-hidden="true"
+        class="mk913-spotlight pointer-events-none absolute -inset-x-4 -inset-y-6 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.28)_0%,rgba(16,185,129,0.12)_45%,transparent_72%)] opacity-40 blur-2xl"
+      ></div>
+
+      <div
+        id="interactive-keyboard"
+        data-theme="saturn"
+        data-rgb="spectrum"
+        class="mk913-chassis relative mx-auto w-full max-w-[880px] rounded-2xl border-2 p-2 shadow-[0_24px_60px_rgba(0,0,0,0.75)] select-none sm:rounded-3xl sm:p-4"
+      >
+        <!-- Kilau Cahaya Diagonal ala Iklan Produk -->
+        <div
+          aria-hidden="true"
+          class="mk913-sheen pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-2xl sm:rounded-3xl"
+        ></div>
+        <!-- Side Panel RGB Left & Right (Ciri Khas MK913) -->
+        <div class="side-rgb-strip side-rgb-left pointer-events-none absolute top-6 bottom-6 left-0 w-1 rounded-r-full sm:w-1.5"></div>
+        <div class="side-rgb-strip side-rgb-right pointer-events-none absolute top-6 bottom-6 right-0 w-1 rounded-l-full sm:w-1.5"></div>
+
+        <!-- Top Chassis Bar: Branding, Mode Konektivitas & Kontrol Knob Mobile -->
+        <div class="mb-2 flex flex-wrap items-center justify-between gap-2 px-1 sm:mb-3 sm:px-2">
+          <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1">
+              <span id="caps-led" class="h-1.5 w-1.5 rounded-full bg-slate-600 transition-colors sm:h-2 sm:w-2"></span>
+              <span class="h-1.5 w-5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee] sm:w-7"></span>
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 sm:h-2 sm:w-2"></span>
+            </div>
+            <span class="font-mono text-[9px] font-bold tracking-wider text-slate-300 uppercase sm:text-[11px]">
+              FANTECH ATOM PRO83 <span class="hidden text-cyan-400 sm:inline">• MK913</span>
+            </span>
+          </div>
+
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="hidden rounded border border-white/10 bg-black/25 px-1.5 py-0.5 font-mono text-[9px] text-slate-300 sm:inline-block">
+              2.4G / BT5.0 / TYPE-C
+            </span>
+            <div class="flex items-center gap-1 rounded-lg border border-white/10 bg-black/30 px-1.5 py-0.5">
+              <button
+                type="button"
+                id="knob-vol-down"
+                aria-label="Kurangi Volume Knob"
+                class="touch-btn flex h-6 w-6 items-center justify-center rounded bg-white/10 font-mono text-xs font-bold text-slate-200 hover:bg-white/20 active:scale-90 sm:h-6 sm:w-6"
+              >
+                -
+              </button>
+              <span id="knob-vol-readout" class="min-w-[3.2rem] text-center font-mono text-[9px] font-bold text-cyan-300 sm:text-[10px]">
+                VOL 90%
+              </span>
+              <button
+                type="button"
+                id="knob-vol-up"
+                aria-label="Tambah Volume Knob"
+                class="touch-btn flex h-6 w-6 items-center justify-center rounded bg-white/10 font-mono text-xs font-bold text-slate-200 hover:bg-white/20 active:scale-90 sm:h-6 sm:w-6"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grid 6 Baris 75% MK913 (Proportional 16u per baris) -->
+        <div class="space-y-1 sm:space-y-1.5">
+          {keyboardRows.map((row) => (
+            <div class="flex w-full items-stretch gap-[2px] sm:gap-1.5">
+              {row.map((key, colIdx) => (
+                <>
+                  {key.isKnob ? (
+                    <button
+                      type="button"
+                      id="rotary-knob"
+                      data-code={key.code}
+                      data-large="true"
+                      aria-label="Rotary Knob Volume & Mute"
+                      style={`flex: ${key.units} 0 0%; --col: ${colIdx};`}
+                      class="knob-btn touch-btn group relative flex h-9 min-w-0 items-center justify-center rounded-lg border border-white/10 bg-black/30 p-0.5 focus:outline-none sm:h-11 md:h-12"
+                    >
+                      <span
+                        id="rotary-knob-dial"
+                        class="relative flex aspect-square h-7 w-7 items-center justify-center rounded-full border-2 border-slate-500 bg-gradient-to-b from-slate-600 via-slate-800 to-slate-950 shadow-inner transition-transform duration-150 sm:h-9 sm:w-9"
+                      >
+                        <span class="knob-notch absolute top-1 h-1.5 w-0.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee] sm:h-2"></span>
+                      </span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      data-code={key.code}
+                      data-tone={key.tone || 'alpha'}
+                      data-large={key.isLarge ? 'true' : 'false'}
+                      style={`flex: ${key.units} 0 0%; --col: ${colIdx};`}
+                      class:list={[
+                        'keycap touch-btn group relative flex h-9 min-w-0 flex-col items-center justify-center overflow-hidden rounded-[5px] border-b-[3px] px-0.5 leading-none font-bold tracking-tight transition-transform duration-75 focus:outline-none sm:h-11 sm:rounded-lg sm:border-b-4 md:h-12',
+                        key.label.length > 3
+                          ? 'text-[6px] min-[400px]:text-[7px] sm:text-[9.5px] md:text-[10.5px]'
+                          : 'text-[7.5px] min-[400px]:text-[8.5px] sm:text-[11px] md:text-xs',
+                      ]}
+                    >
+                      <span class="pointer-events-none truncate">{key.label}</span>
+                      {key.sub && (
+                        <span class="pointer-events-none text-[6px] leading-none opacity-60 sm:text-[8px]">
+                          {key.sub}
+                        </span>
+                      )}
+                    </button>
+                  )}
+                  {key.gapAfter && (
+                    <div
+                      aria-hidden="true"
+                      style={`flex: ${key.gapAfter} 0 0%`}
+                      class="min-w-0"
+                    ></div>
+                  )}
+                </>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <p class="mt-3 text-center text-[11px] text-slate-400 sm:text-xs">
+      Tips: Di HP/tablet, ketuk langsung tombol mana saja (mendukung multi-sentuh) atau tekan tombol <strong>- / +</strong> &amp; knob untuk atur volume.
+    </p>
+
+    <!-- Tombol Aksi Pembelian -->
+    <div class="mt-7 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row sm:gap-3.5">
+      <a
+        href={getWaUrl('Halo, saya tertarik memesan Mechanical Keyboard Fantech Atom Pro83 (MK913).')}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="touch-btn inline-flex min-h-[46px] w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-7 py-3.5 text-sm font-extrabold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 active:scale-[0.98] sm:w-auto sm:text-base"
+      >
+        <span>Pesan Sekarang</span>
+      </a>
+      <a
+        href="#paket"
+        class="touch-btn inline-flex min-h-[46px] w-full items-center justify-center rounded-xl border border-slate-700 bg-slate-900 px-6 py-3.5 text-sm font-semibold text-slate-200 transition hover:border-cyan-500/60 hover:text-white active:scale-[0.98] sm:w-auto"
+      >
+        Lihat Varian &amp; Harga
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Optimalisasi responsivitas sentuh untuk HP & Tablet */
+  .touch-btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Tema 1: Fantech Atom Pro83 MK913 — Saturn Grey (3-Tone) */
+  .mk913-chassis[data-theme='saturn'] {
+    background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+    border-color: #475569;
+  }
+
+  .mk913-chassis[data-theme='saturn'] .keycap[data-tone='alpha'] {
+    background-color: #e2e8f0;
+    border-color: #94a3b8;
+    color: #0f172a;
+  }
+
+  .mk913-chassis[data-theme='saturn'] .keycap[data-tone='mod'] {
+    background-color: #475569;
+    border-color: #1e293b;
+    color: #f8fafc;
+  }
+
+  .mk913-chassis[data-theme='saturn'] .keycap[data-tone='space'] {
+    background-color: #cbd5e1;
+    border-color: #64748b;
+    color: #0f172a;
+  }
+
+  .mk913-chassis[data-theme='saturn'] .keycap[data-tone='accent'] {
+    background-color: #0284c7;
+    border-color: #075985;
+    color: #ffffff;
+  }
+
+  .mk913-chassis[data-theme='saturn'] .keycap[data-tone='accentAlt'] {
+    background-color: #f59e0b;
+    border-color: #b45309;
+    color: #0f172a;
+  }
+
+  /* Tema 2: Fantech Atom Pro83 MK913 — Mercury Black */
+  .mk913-chassis[data-theme='mercury'] {
+    background: linear-gradient(180deg, #18181b 0%, #09090b 100%);
+    border-color: #27272a;
+  }
+
+  .mk913-chassis[data-theme='mercury'] .keycap[data-tone='alpha'] {
+    background-color: #27272a;
+    border-color: #09090b;
+    color: #f4f4f5;
+  }
+
+  .mk913-chassis[data-theme='mercury'] .keycap[data-tone='mod'] {
+    background-color: #18181b;
+    border-color: #000000;
+    color: #a1a1aa;
+  }
+
+  .mk913-chassis[data-theme='mercury'] .keycap[data-tone='space'] {
+    background-color: #27272a;
+    border-color: #09090b;
+    color: #e4e4e7;
+  }
+
+  .mk913-chassis[data-theme='mercury'] .keycap[data-tone='accent'] {
+    background-color: #06b6d4;
+    border-color: #0e7490;
+    color: #042f2e;
+  }
+
+  .mk913-chassis[data-theme='mercury'] .keycap[data-tone='accentAlt'] {
+    background-color: #6366f1;
+    border-color: #3730a3;
+    color: #ffffff;
+  }
+
+  /* Efek RGB Backlight & Side Panel */
+  .mk913-chassis[data-rgb='spectrum'] .side-rgb-strip {
+    background: linear-gradient(180deg, #22d3ee, #6366f1, #ec4899, #10b981, #22d3ee);
+    background-size: 100% 300%;
+    animation: rgbFlow 4s linear infinite;
+    box-shadow: 0 0 14px rgba(34, 211, 238, 0.7);
+  }
+
+  .mk913-chassis[data-rgb='spectrum'] .keycap {
+    box-shadow: 0 2px 8px rgba(34, 211, 238, 0.14);
+  }
+
+  .mk913-chassis[data-rgb='cyan'] .side-rgb-strip {
+    background: #06b6d4;
+    box-shadow: 0 0 14px rgba(6, 182, 212, 0.8);
+  }
+
+  .mk913-chassis[data-rgb='cyan'] .keycap {
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.18);
+  }
+
+  .mk913-chassis[data-rgb='off'] .side-rgb-strip {
+    background: #334155;
+    box-shadow: none;
+  }
+
+  @keyframes rgbFlow {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: 0% 300%;
+    }
+  }
+
+  @media (hover: hover) {
+    .keycap:hover {
+      filter: brightness(1.08);
+    }
+  }
+
+  /* Efek fisik saat tombol ditekan (HP, Tablet & PC) */
+  .keycap.is-pressed {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+    background-color: #10b981 !important;
+    border-color: #065f46 !important;
+    color: #020617 !important;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.65) !important;
+  }
+
+  .knob-btn.is-pressed #rotary-knob-dial {
+    transform: scale(0.9);
+    box-shadow: 0 0 16px rgba(34, 211, 238, 0.8);
+  }
+
+  /* Animasi Showcase Iklan Produk 3D + Kilau Cahaya + RGB Wave */
+  .mk913-chassis {
+    transform-style: preserve-3d;
+    backface-visibility: visible;
+    will-change: transform, opacity, filter;
+  }
+
+  .mk913-sheen::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    bottom: -30%;
+    left: -60%;
+    width: 38%;
+    transform: skewX(-24deg) translateX(-120%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.05) 35%,
+      rgba(34, 211, 238, 0.28) 50%,
+      rgba(255, 255, 255, 0.08) 65%,
+      transparent 100%
+    );
+    opacity: 0;
+  }
+
+  .mk913-stage.is-ad-animating .mk913-spotlight {
+    animation: mk913SpotlightBloom 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .mk913-chassis.is-ad-animating {
+    animation: mk913CommercialReveal 1.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .mk913-chassis.is-ad-animating .mk913-sheen::before {
+    animation: mk913SheenSweep 1.05s cubic-bezier(0.25, 1, 0.5, 1) 0.38s both;
+  }
+
+  .mk913-chassis.is-ad-animating .keycap {
+    animation: mk913KeyWave 0.65s ease-out both;
+    animation-delay: calc(0.45s + var(--col, 0) * 38ms);
+  }
+
+  .mk913-chassis.is-ad-animating #rotary-knob-dial {
+    animation: mk913KnobHeroSpin 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+  }
+
+  @keyframes mk913CommercialReveal {
+    0% {
+      opacity: 0;
+      transform: translateY(28px) rotateX(34deg) rotateY(-210deg) rotateZ(-5deg) scale(0.74);
+      filter: brightness(0.6);
+    }
+    38% {
+      opacity: 1;
+      transform: translateY(-10px) rotateX(16deg) rotateY(18deg) rotateZ(2deg) scale(1.035);
+      filter: brightness(1.14);
+    }
+    68% {
+      opacity: 1;
+      transform: translateY(-3px) rotateX(6deg) rotateY(-6deg) rotateZ(-0.6deg) scale(1.01);
+      filter: brightness(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+      filter: brightness(1);
+    }
+  }
+
+  @keyframes mk913SpotlightBloom {
+    0% {
+      opacity: 0.1;
+      transform: scale(0.65);
+    }
+    45% {
+      opacity: 0.95;
+      transform: scale(1.12);
+    }
+    100% {
+      opacity: 0.45;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes mk913SheenSweep {
+    0% {
+      opacity: 0;
+      transform: skewX(-24deg) translateX(-140%);
+    }
+    25% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: skewX(-24deg) translateX(460%);
+    }
+  }
+
+  @keyframes mk913KeyWave {
+    0% {
+      filter: brightness(1);
+    }
+    45% {
+      transform: translateY(-2px);
+      filter: brightness(1.38);
+      box-shadow: 0 0 14px rgba(34, 211, 238, 0.75), 0 0 6px rgba(16, 185, 129, 0.55);
+    }
+    100% {
+      transform: translateY(0);
+      filter: brightness(1);
+    }
+  }
+
+  @keyframes mk913KnobHeroSpin {
+    0% {
+      box-shadow: 0 0 0 rgba(34, 211, 238, 0);
+      transform: rotate(-180deg) scale(0.92);
+    }
+    55% {
+      box-shadow: 0 0 18px rgba(34, 211, 238, 0.9);
+      transform: rotate(65deg) scale(1.1);
+    }
+    100% {
+      box-shadow: none;
+      transform: rotate(45deg) scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mk913-stage.is-ad-animating .mk913-spotlight,
+    .mk913-chassis.is-ad-animating,
+    .mk913-chassis.is-ad-animating .mk913-sheen::before,
+    .mk913-chassis.is-ad-animating .keycap,
+    .mk913-chassis.is-ad-animating #rotary-knob-dial {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  type SwitchType = 'clacky' | 'clicky' | 'creamy' | 'thocky';
+  type RgbMode = 'spectrum' | 'cyan' | 'off';
+
+  let currentSwitch: SwitchType = 'clacky';
+  let currentRgbIndex = 0;
+  const rgbModes: { id: RgbMode; label: string }[] = [
+    { id: 'spectrum', label: 'Spectrum' },
+    { id: 'cyan', label: 'Cyan Ice' },
+    { id: 'off', label: 'Off' },
+  ];
+
+  let volume = 90;
+  let isMuted = false;
+  let knobAngle = 45;
+  let capsOn = false;
+  let audioCtx: AudioContext | null = null;
+  let masterGain: GainNode | null = null;
+  let noiseBuffer: AudioBuffer | null = null;
+
+  const chassis = document.getElementById('interactive-keyboard');
+  const keyDisplay = document.getElementById('active-key-display');
+  const capsLed = document.getElementById('caps-led');
+  const knobDial = document.getElementById('rotary-knob-dial');
+  const knobReadout = document.getElementById('knob-vol-readout');
+  const rgbToggleBtn = document.getElementById('rgb-toggle-btn');
+  const rgbModeLabel = document.getElementById('rgb-mode-label');
+
+  const keyElements = new Map<string, HTMLElement>();
+  const pressTimestamps = new Map<string, number>();
+  const releaseTimers = new Map<string, number>();
+  const activePointers = new Map<number, string>();
+  const pressedKeys = new Set<string>();
+
+  document.querySelectorAll<HTMLElement>('.keycap, #rotary-knob').forEach((el) => {
+    const code = el.dataset.code;
+    if (code) keyElements.set(code, el);
+  });
+
+  function syncMasterVolume() {
+    if (!audioCtx || !masterGain) return;
+    // Gain diperkuat signifikan agar terdengar lantang & jelas di speaker HP maupun laptop
+    const targetGain = isMuted ? 0 : 0.6 + (volume / 100) * 2.2;
+    masterGain.gain.setTargetAtTime(targetGain, audioCtx.currentTime, 0.01);
+  }
+
+  function createSoftLimiterCurve() {
+    const samples = 1024;
+    const curve = new Float32Array(samples);
+    for (let i = 0; i < samples; i++) {
+      const x = (i * 2) / samples - 1;
+      curve[i] = Math.tanh(x * 1.45);
+    }
+    return curve;
+  }
+
+  function ensureAudioReady() {
+    if (!audioCtx) {
+      const AudioContextCtor =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      audioCtx = new AudioContextCtor();
+
+      // Master Chain: Gain tinggi + Silicone Filter + Soft Limiter + Compressor
+      masterGain = audioCtx.createGain();
+
+      const siliconeDampener = audioCtx.createBiquadFilter();
+      siliconeDampener.type = 'lowpass';
+      siliconeDampener.frequency.value = 6800;
+      siliconeDampener.Q.value = 0.6;
+
+      const softLimiter = audioCtx.createWaveShaper();
+      softLimiter.curve = createSoftLimiterCurve();
+      softLimiter.oversample = '2x';
+
+      const compressor = audioCtx.createDynamicsCompressor();
+      compressor.threshold.value = -9;
+      compressor.knee.value = 8;
+      compressor.ratio.value = 6;
+      compressor.attack.value = 0.0015;
+      compressor.release.value = 0.07;
+
+      const outputBoost = audioCtx.createGain();
+      outputBoost.gain.value = 1.35;
+
+      masterGain.connect(siliconeDampener);
+      siliconeDampener.connect(softLimiter);
+      softLimiter.connect(compressor);
+      compressor.connect(outputBoost);
+      outputBoost.connect(audioCtx.destination);
+      syncMasterVolume();
+
+      // Buffer noise 1 detik yang dipakai ulang (nol alokasi GC saat mengetik cepat di HP)
+      const len = audioCtx.sampleRate;
+      noiseBuffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+      const data = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < len; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function getKeyAcousticProfile(code: string) {
+    if (code === 'Space') {
+      return { kind: 'space' as const, cavityHz: 520, bodyHz: 108, stabTick: 0.08 };
+    }
+    if (['Enter', 'Backspace', 'ShiftLeft', 'ShiftRight'].includes(code)) {
+      return { kind: 'stabilized' as const, cavityHz: 720, bodyHz: 132, stabTick: 0.045 };
+    }
+    if (['Tab', 'CapsLock', 'ControlLeft', 'ControlRight', 'MetaLeft', 'AltLeft', 'AltRight', 'Fn'].includes(code)) {
+      return { kind: 'modifier' as const, cavityHz: 880, bodyHz: 148, stabTick: 0 };
+    }
+
+    // Offset akustik tipis per posisi tombol (tengah chassis sedikit lebih penuh dari tepi)
+    let hash = 0;
+    for (let i = 0; i < code.length; i++) {
+      hash = (hash * 31 + code.charCodeAt(i)) % 17;
+    }
+    const posOffset = 0.94 + (hash / 17) * 0.12;
+    return {
+      kind: 'alpha' as const,
+      cavityHz: 1080 * posOffset,
+      bodyHz: 162 * posOffset,
+      stabTick: 0,
+    };
+  }
+
+  function triggerNoiseBurst(
+    startTime: number,
+    duration: number,
+    filterType: BiquadFilterType,
+    freq: number,
+    q: number,
+    peakGain: number
+  ) {
+    if (!audioCtx || !masterGain || !noiseBuffer) return;
+    const src = audioCtx.createBufferSource();
+    src.buffer = noiseBuffer;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = filterType;
+    filter.frequency.setValueAtTime(freq, startTime);
+    filter.Q.setValueAtTime(q, startTime);
+
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.linearRampToValueAtTime(peakGain, startTime + 0.0015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain);
+
+    const offset = Math.random() * 0.7;
+    src.start(startTime, offset, duration + 0.01);
+  }
+
+  function triggerImpactImpulse(
+    startTime: number,
+    startHz: number,
+    endHz: number,
+    duration: number,
+    peakGain: number,
+    wave: OscillatorType = 'sine'
+  ) {
+    if (!audioCtx || !masterGain) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = wave;
+    osc.frequency.setValueAtTime(startHz, startTime);
+    osc.frequency.exponentialRampToValueAtTime(endHz, startTime + duration);
+
+    gain.gain.setValueAtTime(peakGain, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+    osc.connect(gain);
+    gain.connect(masterGain);
+    osc.start(startTime);
+    osc.stop(startTime + duration + 0.005);
+  }
+
+  // 1A. Suara Encoder Rotary Knob (Detent klik mekanis khas MK913)
+  function playKnobSound(isPress = false) {
+    ensureAudioReady();
+    if (!audioCtx || !masterGain) return;
+    const now = audioCtx.currentTime;
+    const v = 0.96 + Math.random() * 0.08;
+
+    if (isPress) {
+      triggerImpactImpulse(now, 420 * v, 140, 0.018, 0.35, 'triangle');
+      triggerNoiseBurst(now, 0.012, 'bandpass', 1750 * v, 3.0, 0.45);
+    } else {
+      triggerImpactImpulse(now, 560 * v, 210, 0.01, 0.2, 'sine');
+      triggerNoiseBurst(now, 0.007, 'bandpass', 2400 * v, 3.5, 0.3);
+    }
+  }
+
+  // 1B. Suara Downstroke untuk 4 Kategori: Clacky, Clicky, Creamy, dan Thocky
+  function playKeyDownSound(code: string, type: SwitchType) {
+    ensureAudioReady();
+    if (!audioCtx || !masterGain) return;
+
+    const now = audioCtx.currentTime;
+    const v = 0.95 + Math.random() * 0.1;
+    const profile = getKeyAcousticProfile(code);
+
+    if (type === 'clacky') {
+      // Clacky: terang, tajam, snappy high-mid ABS clack
+      triggerImpactImpulse(now, profile.bodyHz * 1.42 * v, profile.bodyHz * 0.62, 0.015, 0.68, 'triangle');
+      triggerNoiseBurst(now, 0.014, 'bandpass', profile.cavityHz * 1.52 * v, 3.8, 1.35);
+      triggerNoiseBurst(now, 0.011, 'highpass', 2100 * v, 1.1, 0.52);
+    } else if (type === 'clicky') {
+      // Clicky: click-jacket snap keras + housing clack tajam
+      triggerNoiseBurst(now, 0.009, 'bandpass', 3850 * v, 3.6, 1.45);
+      triggerImpactImpulse(now, 3100 * v, 1250, 0.007, 0.34, 'triangle');
+      const t = now + 0.004;
+      triggerImpactImpulse(t, profile.bodyHz * 1.18 * v, profile.bodyHz * 0.55, 0.017, 0.62, 'triangle');
+      triggerNoiseBurst(t, 0.014, 'bandpass', profile.cavityHz * 1.35 * v, 3.0, 1.05);
+    } else if (type === 'creamy') {
+      // Creamy: marbly pop bulat di mid-frequency dengan redaman lembut
+      triggerImpactImpulse(now, profile.bodyHz * 1.08 * v, profile.bodyHz * 0.48, 0.021, 0.78, 'sine');
+      triggerNoiseBurst(now, 0.016, 'bandpass', profile.cavityHz * 1.05 * v, 4.4, 1.25);
+      triggerNoiseBurst(now, 0.024, 'lowpass', 740 * v, 1.0, 0.72);
+    } else {
+      // Thocky: dalam, berat, bassy & padat berkarakter low-end
+      triggerImpactImpulse(now, profile.bodyHz * 0.74 * v, profile.bodyHz * 0.34, 0.028, 0.95, 'sine');
+      triggerImpactImpulse(now, profile.bodyHz * 0.52 * v, 42, 0.032, 0.65, 'triangle');
+      triggerNoiseBurst(now, 0.018, 'bandpass', profile.cavityHz * 0.66 * v, 3.4, 1.15);
+      triggerNoiseBurst(now, 0.028, 'lowpass', 430 * v, 1.1, 0.92);
+    }
+
+    // Karakteristik stabilizer plate-mounted pada Spacebar / Enter / Backspace / Shift
+    if (profile.stabTick > 0) {
+      triggerNoiseBurst(now + 0.002, 0.007, 'bandpass', 2650 * v, 3.8, profile.stabTick * 1.6);
+    }
+  }
+
+  // 1C. Suara Upstroke (Top-out saat tombol dilepas sesuai kategori suara)
+  function playKeyUpSound(code: string, type: SwitchType) {
+    if (!audioCtx || !masterGain || audioCtx.state !== 'running') return;
+    const now = audioCtx.currentTime;
+    const v = 0.95 + Math.random() * 0.1;
+    const profile = getKeyAcousticProfile(code);
+
+    if (type === 'clacky') {
+      triggerNoiseBurst(now, 0.009, 'bandpass', profile.cavityHz * 1.85 * v, 3.0, 0.52);
+      triggerNoiseBurst(now, 0.008, 'highpass', 2400 * v, 0.9, 0.22);
+    } else if (type === 'clicky') {
+      triggerNoiseBurst(now, 0.009, 'bandpass', profile.cavityHz * 1.5 * v, 2.8, 0.48);
+      triggerNoiseBurst(now + 0.001, 0.006, 'bandpass', 3250 * v, 3.6, 0.52);
+    } else if (type === 'creamy') {
+      triggerNoiseBurst(now, 0.01, 'bandpass', profile.cavityHz * 1.28 * v, 3.2, 0.44);
+      triggerNoiseBurst(now, 0.013, 'lowpass', 820 * v, 0.8, 0.28);
+    } else {
+      // Thocky upstroke: lebih dalam dan empuk
+      triggerNoiseBurst(now, 0.011, 'bandpass', profile.cavityHz * 0.85 * v, 2.6, 0.45);
+      triggerNoiseBurst(now, 0.015, 'lowpass', 520 * v, 0.9, 0.34);
+    }
+  }
+
+  function updateKnobUI(statusText?: string) {
+    syncMasterVolume();
+    if (knobDial) {
+      knobDial.style.transform = `rotate(${knobAngle}deg)`;
+    }
+    if (knobReadout) {
+      knobReadout.textContent = isMuted ? 'MUTED' : `VOL ${volume}%`;
+      knobReadout.classList.toggle('text-rose-400', isMuted);
+      knobReadout.classList.toggle('text-cyan-300', !isMuted);
+    }
+    if (statusText && keyDisplay) {
+      keyDisplay.textContent = statusText;
+    }
+  }
+
+  function rotateKnob(delta: number) {
+    isMuted = false;
+    volume = Math.max(0, Math.min(100, volume + delta));
+    knobAngle += delta > 0 ? 22 : -22;
+    syncMasterVolume();
+    playKnobSound(false);
+    if ('vibrate' in navigator) navigator.vibrate?.(5);
+    updateKnobUI(`VOL ${volume}%`);
+  }
+
+  // 2. Animasi Tekan & Lepas Tombol dengan Minimum Durasi Visual untuk Sentuhan Cepat di Gadget
+  function pressKey(code: string) {
+    const keyEl = keyElements.get(code);
+    if (!keyEl) return;
+
+    const pendingTimer = releaseTimers.get(code);
+    if (pendingTimer) {
+      window.clearTimeout(pendingTimer);
+      releaseTimers.delete(code);
+    }
+
+    keyEl.classList.add('is-pressed');
+    pressTimestamps.set(code, performance.now());
+    pressedKeys.add(code);
+
+    if (code === 'CapsLock') {
+      capsOn = !capsOn;
+      capsLed?.classList.toggle('bg-emerald-400', capsOn);
+      capsLed?.classList.toggle('shadow-[0_0_8px_#34d399]', capsOn);
+      capsLed?.classList.toggle('bg-slate-600', !capsOn);
+    }
+
+    if (code === 'AudioVolumeMute') {
+      isMuted = !isMuted;
+      updateKnobUI(isMuted ? 'Knob: Mute' : `Knob: ${volume}%`);
+      if (!isMuted) playKnobSound(true);
+    } else {
+      if (keyDisplay) {
+        keyDisplay.textContent = isMuted ? `${code} (Muted)` : code;
+      }
+      playKeyDownSound(code, currentSwitch);
+    }
+
+    if ('vibrate' in navigator) {
+      navigator.vibrate?.(6);
+    }
+  }
+
+  function releaseKey(code: string) {
+    const keyEl = keyElements.get(code);
+    if (!keyEl) return;
+
+    if (pressedKeys.has(code)) {
+      pressedKeys.delete(code);
+      if (code !== 'AudioVolumeMute') {
+        playKeyUpSound(code, currentSwitch);
+      }
+    }
+
+    const pressedAt = pressTimestamps.get(code) ?? 0;
+    const elapsed = performance.now() - pressedAt;
+    const minPressMs = 90;
+
+    if (elapsed < minPressMs) {
+      const existing = releaseTimers.get(code);
+      if (existing) window.clearTimeout(existing);
+      const timer = window.setTimeout(() => {
+        keyEl.classList.remove('is-pressed');
+        releaseTimers.delete(code);
+      }, minPressMs - elapsed);
+      releaseTimers.set(code, timer);
+    } else {
+      keyEl.classList.remove('is-pressed');
+    }
+  }
+
+  // 3. Listener Keyboard Fisik
+  window.addEventListener('keydown', (e) => {
+    const activeTag = document.activeElement?.tagName;
+    if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
+
+    if (['Space', 'ArrowUp', 'ArrowDown', 'Tab'].includes(e.code)) {
+      e.preventDefault();
+    }
+
+    if (!e.repeat) {
+      pressKey(e.code);
+    }
+  });
+
+  window.addEventListener('keyup', (e) => {
+    releaseKey(e.code);
+  });
+
+  window.addEventListener('blur', () => {
+    activePointers.clear();
+    pressedKeys.clear();
+    keyElements.forEach((el) => el.classList.remove('is-pressed'));
+  });
+
+  // 4. Listener Multi-Touch & Mouse Responsif untuk Gadget (HP, Tablet, PC)
+  keyElements.forEach((el, code) => {
+    el.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0 && e.pointerType === 'mouse') return;
+      e.preventDefault();
+      activePointers.set(e.pointerId, code);
+      pressKey(code);
+    });
+  });
+
+  function handlePointerEnd(e: PointerEvent) {
+    const code = activePointers.get(e.pointerId);
+    if (!code) return;
+    activePointers.delete(e.pointerId);
+    releaseKey(code);
+  }
+
+  window.addEventListener('pointerup', handlePointerEnd);
+  window.addEventListener('pointercancel', handlePointerEnd);
+
+  // Scroll wheel pada Rotary Knob untuk Desktop
+  document.getElementById('rotary-knob')?.addEventListener(
+    'wheel',
+    (e) => {
+      e.preventDefault();
+      rotateKnob(e.deltaY < 0 ? 5 : -5);
+    },
+    { passive: false }
+  );
+
+  // Tombol - / + Knob untuk Gadget Layar Sentuh
+  document.getElementById('knob-vol-down')?.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    rotateKnob(-5);
+  });
+  document.getElementById('knob-vol-up')?.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    rotateKnob(5);
+  });
+
+  // 5. Selector Tipe Switch
+  document.querySelectorAll<HTMLButtonElement>('.switch-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const selected = btn.dataset.switch as SwitchType;
+      if (!selected) return;
+      currentSwitch = selected;
+
+      document.querySelectorAll<HTMLButtonElement>('.switch-btn').forEach((b) => {
+        b.classList.remove('bg-cyan-600', 'text-white');
+        b.classList.add('text-slate-400');
+      });
+      btn.classList.add('bg-cyan-600', 'text-white');
+      btn.classList.remove('text-slate-400');
+
+      pressKey('Space');
+      window.setTimeout(() => releaseKey('Space'), 110);
+    });
+  });
+
+  // 6. Selector Varian Warna (Saturn Grey / Mercury Black)
+  document.querySelectorAll<HTMLButtonElement>('.colorway-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const theme = btn.dataset.theme;
+      if (!theme || !chassis) return;
+      chassis.dataset.theme = theme;
+
+      document.querySelectorAll<HTMLButtonElement>('.colorway-btn').forEach((b) => {
+        b.classList.remove('bg-slate-700', 'text-white');
+        b.classList.add('text-slate-400');
+      });
+      btn.classList.add('bg-slate-700', 'text-white');
+      btn.classList.remove('text-slate-400');
+
+      playKnobSound(true);
+      if (keyDisplay) keyDisplay.textContent = theme === 'saturn' ? 'Saturn' : 'Mercury';
+    });
+  });
+
+  // 7. Toggle Mode RGB Side Panel & Backlight
+  rgbToggleBtn?.addEventListener('click', () => {
+    currentRgbIndex = (currentRgbIndex + 1) % rgbModes.length;
+    const mode = rgbModes[currentRgbIndex];
+    if (chassis) chassis.dataset.rgb = mode.id;
+    if (rgbModeLabel) rgbModeLabel.textContent = mode.label;
+    playKnobSound(true);
+    if (keyDisplay) keyDisplay.textContent = `RGB: ${mode.label}`;
+  });
+
+  // 8. Animasi Showcase Iklan Produk:
+  //    - Saat halaman direfresh / pertama dibuka (termasuk bfcache pageshow)
+  //    - Setiap kali keyboard masuk ke viewport
+  //    - Setiap kali setelah halaman mentok di-scroll kembali ke paling atas
+  const keyboardStage = document.getElementById('keyboard-stage');
+  if (keyboardStage && chassis) {
+    let wasInView = false;
+    let hasScrolledDown = false;
+    let lastTriggeredAt = 0;
+    let cleanupTimer: number | undefined;
+
+    const triggerAdShowcase = (force = false) => {
+      const now = performance.now();
+      if (!force && now - lastTriggeredAt < 450) return;
+      lastTriggeredAt = now;
+
+      if (cleanupTimer) window.clearTimeout(cleanupTimer);
+
+      keyboardStage.classList.remove('is-ad-animating');
+      chassis.classList.remove('is-ad-animating');
+      void chassis.offsetWidth;
+      keyboardStage.classList.add('is-ad-animating');
+      chassis.classList.add('is-ad-animating');
+
+      cleanupTimer = window.setTimeout(() => {
+        keyboardStage.classList.remove('is-ad-animating');
+        chassis.classList.remove('is-ad-animating');
+      }, 1700);
+    };
+
+    // Trigger 1: Saat halaman baru dimuat / direfresh
+    triggerAdShowcase(true);
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) triggerAdShowcase(true);
+    });
+
+    // Trigger 2: Setiap kali masuk viewport (saat scroll naik/turun)
+    const viewportObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.15) {
+            if (!wasInView) {
+              wasInView = true;
+              triggerAdShowcase(false);
+            }
+          } else if (!entry.isIntersecting) {
+            wasInView = false;
+          }
+        });
+      },
+      { threshold: [0, 0.15] }
+    );
+    viewportObserver.observe(keyboardStage);
+
+    // Trigger 3: Setiap kali setelah scroll turun lalu mentok kembali ke paling atas (scrollY <= 2)
+    window.addEventListener(
+      'scroll',
+      () => {
+        const y = window.scrollY || document.documentElement.scrollTop || 0;
+        if (y > 48) {
+          hasScrolledDown = true;
+        } else if (y <= 2 && hasScrolledDown) {
+          hasScrolledDown = false;
+          triggerAdShowcase(false);
+        }
+      },
+      { passive: true }
+    );
+  }
+</script>

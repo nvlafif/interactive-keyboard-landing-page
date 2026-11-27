@@ -1,121 +1,129 @@
 export const siteConfig = {
-  brandName: "NusaWeb Studio",
-  tagline: "Jasa Pembuatan Landing Page Cepat & Konversi Tinggi",
+  brandName: "Atom Pro83",
+  modelCode: "MK913",
+  tagline: "Fantech Atom Pro83 (MK913) — 75% Tri-Mode Mechanical Keyboard",
   description:
-    "Tingkatkan konversi iklan dan penjualan bisnis Anda dengan landing page modern, mobile-first, dan garansi skor kecepatan Google PageSpeed 95+.",
-  whatsappNumber: "6281234567890", // Ganti dengan nomor WA Anda (format 62...)
+    "Keyboard mechanical 75% (83 tombol + Rotary Knob) dengan koneksi Tri-Mode, 5-Pin Hot-Swappable, Sound-Absorbing Silicone, dan Side-Panel RGB.",
+  whatsappNumber: "6281234567890", // Ganti dengan nomor WA toko Anda (format 62...)
   defaultWaText:
-    "Halo, saya tertarik konsultasi pembuatan landing page untuk bisnis saya.",
-  email: "halo@nusawebstudio.id",
-  instagram: "@nusawebstudio",
+    "Halo, saya tertarik memesan Keyboard Mechanical Fantech Atom Pro83 (MK913).",
+  email: "halo@atompro83.id",
+  instagram: "@atompro83.id",
 };
 
 export function getWaUrl(message: string = siteConfig.defaultWaText) {
   return `https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(message)}`;
 }
 
+export const mk913Specs = [
+  { label: "Layout", value: "75% • 83 Keys + Knob" },
+  { label: "Koneksi", value: "Wired / 2.4GHz / BT 5.0" },
+  { label: "PCB", value: "5-Pin Hot-Swappable" },
+  { label: "Baterai", value: "2000 mAh Rechargeable" },
+];
+
 export const features = [
   {
-    title: "Loading Instan (Skor 95+)",
+    title: "Tri-Mode Connectivity",
     description:
-      "Dibangun tanpa beban script berlebih sehingga terbuka dalam hitungan milidetik di jaringan seluler, mencegah calon pembeli kabur sebelum halaman terbuka.",
-    icon: "bolt",
+      "Fleksibel dipakai di PC, laptop, tablet, hingga HP lewat kabel Type-C, dongle wireless 2.4GHz low-latency, atau Bluetooth 5.0 hingga 3 perangkat.",
+    icon: "wireless",
   },
   {
-    title: "Desain Mobile-First",
+    title: "5-Pin Hot-Swappable PCB",
     description:
-      "Lebih dari 85% trafik iklan berasal dari smartphone. Tata letak dan tombol aksi dirancang presisi untuk kenyamanan layar ponsel.",
-    icon: "mobile",
+      "Bebas gonta-ganti switch mekanikal 3-pin maupun 5-pin tanpa solder. Tersedia varian bawaan Atom Red (Soft Linear) dan Atom Blue (Clicky).",
+    icon: "switch",
   },
   {
-    title: "Fokus Konversi & CTA Jelas",
+    title: "Rotary Knob & Silicone Pad",
     description:
-      "Alur copywriting terstruktur mulai dari penawaran utama, bukti kepercayaan, hingga tombol WhatsApp otomatis yang siap menutup penjualan.",
-    icon: "target",
+      "Dilengkapi Multi-Function Rotary Knob untuk kontrol volume/RGB serta lapisan Sound-Absorbing Silicone agar suara ketikan padat dan bebas ping.",
+    icon: "knob",
   },
   {
-    title: "Siap Iklan & Ramah SEO",
+    title: "22 Mode RGB + Side Panel",
     description:
-      "Struktur meta tag lengkap untuk pratinjau tautan WhatsApp/Instagram yang rapi serta siap dipasangi Meta Pixel maupun Google Analytics.",
-    icon: "chart",
+      "Pencahayaan per-key RGB (22 mode) dan Side-Panel RGB (11 efek spektrum) dengan baterai 2000 mAh serta dukungan software macro Windows.",
+    icon: "rgb",
   },
 ];
 
 export const packages = [
   {
-    name: "Starter",
-    subtitle: "Cocok untuk profil singkat & validasi produk",
+    name: "Saturn Grey",
+    subtitle: "Varian 3-Tone klasik dengan keycaps abu-abu, putih & aksen cyan",
     price: "Rp 499.000",
-    originalPrice: "Rp 750.000",
+    originalPrice: "Rp 649.000",
     popular: false,
     features: [
-      "1 Halaman Landing Page (hingga 4 section)",
-      "Desain Responsif (Mobile & Desktop)",
-      "Integrasi Tombol WhatsApp Pre-filled Text",
-      "Gratis Hosting Cloudflare (Subdomain .pages.dev)",
-      "Sertifikat SSL/HTTPS Otomatis",
-      "Pengerjaan 2–3 Hari Kerja",
-      "2x Revisi Desain & Teks",
+      "Keyboard Fantech Atom Pro83 (MK913) Saturn Grey",
+      "Pilihan Switch: Atom Red (Linear) / Atom Blue (Clicky)",
+      "Koneksi Tri-Mode (Type-C, 2.4GHz Dongle, BT 5.0)",
+      "Multi-Function Rotary Knob & Side-Panel RGB",
+      "5-Pin Hot-Swappable PCB + Silicone Dampener",
+      "Keycap & Switch Puller dalam box",
+      "Garansi Resmi 1 Tahun",
     ],
     waMessage:
-      "Halo, saya ingin memesan Paket Starter (Rp 499.000) untuk landing page bisnis saya.",
+      "Halo, saya ingin memesan Fantech Atom Pro83 (MK913) varian Saturn Grey (Rp 499.000).",
   },
   {
-    name: "Business Pro",
-    subtitle: "Paling ideal untuk kampanye iklan & UMKM serius",
-    price: "Rp 899.000",
-    originalPrice: "Rp 1.350.000",
+    name: "Mercury Black — Pro Bundle",
+    subtitle: "Varian gelap ikonik + bonus aksesoris siap pakai di setup",
+    price: "Rp 569.000",
+    originalPrice: "Rp 749.000",
     popular: true,
     features: [
-      "1 Halaman Penjualan Lengkap (hingga 7 section)",
-      "Bantuan Struktur Copywriting Persuasif",
-      "Integrasi WhatsApp + Formulir Lead ke Email/Sheets",
-      "Bantuan Setup Custom Domain (.com / .id)*",
-      "Optimasi Kecepatan PageSpeed 95+ & SEO Dasar",
-      "Pengerjaan 3–5 Hari Kerja",
-      "4x Revisi Desain & Konten",
+      "Keyboard Fantech Atom Pro83 (MK913) Mercury Black",
+      "Pilihan Switch: Atom Red (Linear) / Atom Blue (Clicky)",
+      "Bonus 4x Switch Cadangan + Dust Cover Akrilik",
+      "Sound-Absorbing Silicone & Full Anti-Ghosting (NKRO)",
+      "Kabel USB Type-C Braided + Dongle 2.4GHz",
+      "Pengecekan QC Stabilizer & Switch Sebelum Kirim",
+      "Garansi Resmi 1 Tahun",
     ],
     waMessage:
-      "Halo, saya tertarik dengan Paket Business Pro (Rp 899.000). Boleh diskusi detailnya?",
+      "Halo, saya tertarik dengan Fantech Atom Pro83 (MK913) Mercury Black Pro Bundle (Rp 569.000). Apakah stok tersedia?",
   },
   {
-    name: "Scale & Ads",
-    subtitle: "Untuk kebutuhan tracking iklan & halaman tambahan",
-    price: "Rp 1.499.000",
-    originalPrice: "Rp 2.100.000",
+    name: "Custom Mod — Thocky Edition",
+    subtitle: "Sudah di-tune stabilizer & akustiknya untuk suara lebih creamy",
+    price: "Rp 699.000",
+    originalPrice: "Rp 899.000",
     popular: false,
     features: [
-      "Landing Page Utama + Halaman Thank You",
-      "Pemasangan Meta Pixel / TikTok Pixel / GA4",
-      "Komponen Interaktif (Kalkulator / Filter Katalog)",
-      "Bantuan Setup Custom Domain & Cloudflare DNS*",
-      "Prioritas Pengerjaan & Dukungan Teknis 30 Hari",
-      "Revisi Sepuasnya Hingga Siap Tayang",
+      "Pilih Varian Saturn Grey atau Mercury Black",
+      "Pre-Lubed Plate Stabilizer (Spacebar, Enter, Shift)",
+      "Tambahan Tape Mod untuk Suara Lebih Deep & Padat",
+      "Set Keycaps Aksen Tambahan Stellar Edition",
+      "Support Software Remap Key & Macro Windows",
+      "Garansi Resmi 1 Tahun + Konsultasi Switch",
     ],
     waMessage:
-      "Halo, saya ingin konsultasi Paket Scale & Ads (Rp 1.499.000) untuk kebutuhan iklan.",
+      "Halo, saya ingin pesan Fantech Atom Pro83 (MK913) Custom Mod Thocky Edition (Rp 699.000).",
   },
 ];
 
 export const faqs = [
   {
-    question: "Apakah harga paket sudah termasuk nama domain (.com atau .id)?",
+    question: "Apakah Fantech Atom Pro83 (MK913) bisa dipakai tanpa kabel di HP atau tablet?",
     answer:
-      "Harga di atas adalah biaya jasa pembuatan dan hosting super cepat tanpa biaya bulanan. Jika Anda belum memiliki domain, kami akan bantu proses pembelian domain atas nama Anda (sekitar Rp 160.000–Rp 250.000/tahun) agar hak kepemilikan sepenuhnya milik Anda.",
+      "Ya. MK913 mendukung koneksi Tri-Mode: kabel USB Type-C, wireless 2.4GHz (via dongle), dan Bluetooth 5.0 yang bisa terhubung ke 3 perangkat sekaligus (berpindah cepat dengan FN + E / R / T).",
   },
   {
-    question: "Materi apa saja yang perlu saya siapkan sebelum pengerjaan?",
+    question: "Apakah switch-nya bisa diganti tanpa solder?",
     answer:
-      "Anda cukup menyiapkan nama brand/usaha, deskripsi singkat produk atau jasa, daftar harga/paket, foto produk (jika ada), serta nomor WhatsApp tujuan. Jika belum punya teks promosi yang rapi, tim kami akan bantu menyusunnya.",
+      "Bisa. PCB MK913 sudah mendukung 5-pin hot-swappable socket, sehingga kompatibel dengan hampir semua switch mechanical 3-pin maupun 5-pin di pasaran menggunakan switch puller bawaan.",
   },
   {
-    question: "Bagaimana sistem pembayarannya?",
+    question: "Apa fungsi Rotary Knob di pojok kanan atas keyboard?",
     answer:
-      "Pembayaran menggunakan sistem DP (uang muka) sebesar 50% di awal sebagai tanda jadi pengerjaan. Sisa pelunasan 50% dibayarkan setelah preview landing page selesai dan Anda setujui sebelum ditayangkan ke domain utama.",
+      "Multi-Function Rotary Knob berfungsi untuk mengatur tingkat volume atau kecerahan lampu, serta dapat ditekan untuk mute/unmute audio maupun mengganti mode pencahayaan Side-Panel RGB.",
   },
   {
-    question: "Apakah ada biaya perpanjangan hosting setiap bulan?",
+    question: "Lebih cocok pilih switch Atom Red atau Atom Blue?",
     answer:
-      "Tidak ada. Kami mendeploy website Anda di infrastruktur edge Cloudflare Pages dengan bandwidth tanpa batas, sehingga Anda bebas dari biaya sewa server bulanan.",
+      "Atom Red (Linear) memiliki tekanan halus tanpa bunyi klik keras sehingga nyaman untuk mengetik lama, kerja kantor, atau gaming malam hari. Atom Blue (Clicky) cocok jika Anda menyukai sensasi klik tegas dan suara renyah.",
   },
 ];

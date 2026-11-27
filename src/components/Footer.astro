@@ -3,28 +3,34 @@ import { siteConfig, getWaUrl } from '../data/site';
 const year = new Date().getFullYear();
 ---
 
-<footer class="bg-slate-900 pt-16 pb-10 text-slate-300">
+<footer class="border-t border-slate-800/80 bg-slate-950 pt-16 pb-10 text-slate-300">
   <div class="mx-auto max-w-6xl px-4 sm:px-6">
-    <!-- Banner CTA Penutup -->
-    <div class="rounded-3xl bg-gradient-to-r from-indigo-600 to-indigo-700 p-8 text-center text-white shadow-xl sm:p-12">
-      <h2 class="text-2xl font-extrabold sm:text-3xl">
-        Siap Membuat Landing Page yang Menghasilkan?
+    <!-- Banner CTA Penutup bertema MK913 Stellar Edition -->
+    <div class="relative overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950/70 p-8 text-center text-white shadow-2xl sm:p-12">
+      <div class="pointer-events-none absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-cyan-400 via-indigo-500 to-amber-400"></div>
+
+      <span class="inline-block rounded-full border border-cyan-400/30 bg-cyan-500/10 px-3 py-1 font-mono text-[11px] font-bold text-cyan-300 uppercase">
+        Fantech Atom Pro83 • MK913
+      </span>
+      <h2 class="mt-3 text-2xl font-extrabold sm:text-3xl">
+        Upgrade Setup Meja Anda dengan 75% Tri-Mode Mechanical
       </h2>
-      <p class="mx-auto mt-3 max-w-xl text-sm text-indigo-100 sm:text-base">
-        Konsultasikan kebutuhan bisnis Anda secara gratis. Kami bantu rekomendasikan struktur halaman dan paket terbaik.
+      <p class="mx-auto mt-3 max-w-xl text-sm text-slate-300 sm:text-base">
+        Bingung memilih antara varian <strong class="text-white">Saturn Grey</strong> atau <strong class="text-white">Mercury Black</strong>, atau switch Atom Red vs Atom Blue? Konsultasi langsung via WhatsApp.
       </p>
       <a
-        href={getWaUrl()}
+        href={getWaUrl('Halo, saya ingin konsultasi pilihan varian & switch Fantech Atom Pro83 (MK913).')}
         target="_blank"
         rel="noopener noreferrer"
-        class="mt-7 inline-flex items-center gap-2 rounded-xl bg-emerald-400 px-7 py-3.5 text-sm font-extrabold text-slate-950 transition hover:bg-emerald-300 sm:text-base"
+        style="touch-action: manipulation;"
+        class="mt-7 inline-flex min-h-[46px] items-center gap-2 rounded-xl bg-emerald-500 px-7 py-3.5 text-sm font-extrabold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 active:scale-95 sm:text-base"
       >
         <span>Chat WhatsApp Sekarang</span>
       </a>
     </div>
 
-    <div class="mt-14 flex flex-col items-center justify-between gap-4 border-t border-slate-800 pt-8 text-xs text-slate-400 sm:flex-row">
-      <p>&copy; {year} {siteConfig.brandName}. All rights reserved.</p>
+    <div class="mt-14 flex flex-col items-center justify-between gap-4 border-t border-slate-800/80 pt-8 text-xs text-slate-500 sm:flex-row">
+      <p>&copy; {year} {siteConfig.brandName} ({siteConfig.modelCode}). All rights reserved.</p>
       <div class="flex items-center gap-5">
         <span>Email: {siteConfig.email}</span>
         <span>IG: {siteConfig.instagram}</span>
@@ -38,7 +44,8 @@ const year = new Date().getFullYear();
     target="_blank"
     rel="noopener noreferrer"
     aria-label="Hubungi via WhatsApp"
-    class="fixed right-5 bottom-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 transition hover:scale-105 hover:bg-emerald-400"
+    style="touch-action: manipulation;"
+    class="fixed right-5 bottom-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/30 transition hover:scale-105 hover:bg-emerald-400 active:scale-95"
   >
     <svg class="h-7 w-7 fill-current" viewBox="0 0 24 24">
       <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z" />
