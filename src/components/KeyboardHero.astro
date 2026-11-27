@@ -214,13 +214,37 @@ const keyboardRows: KeyItem[][] = [
         >
           RGB: <span id="rgb-mode-label">Spectrum</span>
         </button>
+      </div>
 
-        <!-- Active Key Display -->
-        <div class="flex min-h-[40px] items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/90 px-3.5 py-1.5 text-xs text-slate-400">
-          <span>Input:</span>
-          <code id="active-key-display" class="min-w-[5rem] rounded bg-slate-800 px-2 py-0.5 font-mono font-bold text-emerald-400">
-            Siap
-          </code>
+      <!-- Label Hasil Ketikan Interaktif (Menyatu sempurna tanpa kotak dengan background web) -->
+      <div class="mt-4 flex flex-col items-center justify-center bg-transparent px-2">
+        <div
+          id="typed-output-label"
+          role="status"
+          aria-live="polite"
+          title="Ketuk teks untuk efek gelombang, tekan Backspace untuk hapus, atau ESC untuk reset"
+          class="touch-btn group relative inline-flex min-h-[44px] max-w-full cursor-pointer flex-wrap items-center justify-center gap-x-0.5 bg-transparent px-3 py-1.5 font-mono text-lg font-extrabold tracking-wide text-white sm:text-2xl"
+        >
+          <span id="typed-placeholder" class="text-sm font-medium tracking-normal text-slate-500 transition-opacity sm:text-base">
+            Mulai mengetik di keyboard...
+          </span>
+          <span id="typed-chars" class="inline-flex flex-wrap items-center justify-center"></span>
+          <span
+            id="typed-caret"
+            aria-hidden="true"
+            class="typed-caret ml-0.5 inline-block h-5 w-0.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#22d3ee] sm:h-6"
+          ></span>
+        </div>
+
+        <div class="mt-0.5 flex min-h-[20px] items-center justify-center gap-3 bg-transparent text-[11px] text-slate-500">
+          <span id="typed-hint" class="transition-colors">Ketuk teks untuk animasi gelombang</span>
+          <button
+            type="button"
+            id="typed-clear-btn"
+            class="touch-btn hidden bg-transparent font-mono text-[11px] font-semibold text-cyan-400/80 underline-offset-4 transition hover:text-cyan-300 hover:underline active:scale-95"
+          >
+            Reset
+          </button>
         </div>
       </div>
     </div>
@@ -645,8 +669,103 @@ const keyboardRows: KeyItem[][] = [
     .mk913-chassis.is-ad-animating,
     .mk913-chassis.is-ad-animating .mk913-sheen::before,
     .mk913-chassis.is-ad-animating .keycap,
-    .mk913-chassis.is-ad-animating #rotary-knob-dial {
+    .mk913-chassis.is-ad-animating #rotary-knob-dial,
+    .typed-char,
+    .typed-char.is-waving,
+    .typed-caret {
       animation: none;
+    }
+  }
+
+  /* Animasi Label Hasil Ketikan Interaktif */
+  .typed-caret {
+    animation: typedCaretBlink 1s steps(1, end) infinite;
+  }
+
+  .typed-char {
+    display: inline-block;
+    white-space: pre;
+    transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), color 0.18s ease, text-shadow 0.18s ease;
+    animation: typedCharPop 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @media (hover: hover) {
+    .typed-char:hover {
+      transform: translateY(-5px) scale(1.22);
+      color: #22d3ee;
+      text-shadow: 0 0 14px rgba(34, 211, 238, 0.85);
+    }
+  }
+
+  .typed-char.is-waving {
+    animation: typedCharWave 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--char-idx, 0) * 32ms);
+  }
+
+  .typed-char.is-removing {
+    animation: typedCharOut 0.14s ease-in forwards;
+  }
+
+  @keyframes typedCaretBlink {
+    0%, 49% {
+      opacity: 1;
+    }
+    50%, 100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes typedCharPop {
+    0% {
+      opacity: 0;
+      transform: translateY(10px) scale(0.55) rotate(-6deg);
+      color: #34d399;
+      text-shadow: 0 0 16px rgba(52, 211, 153, 0.9);
+    }
+    55% {
+      opacity: 1;
+      transform: translateY(-3px) scale(1.14) rotate(2deg);
+      color: #22d3ee;
+      text-shadow: 0 0 14px rgba(34, 211, 238, 0.85);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1) rotate(0deg);
+      color: #f8fafc;
+      text-shadow: 0 0 10px rgba(34, 211, 238, 0.18);
+    }
+  }
+
+  @keyframes typedCharWave {
+    0% {
+      transform: translateY(0) scale(1);
+      color: #f8fafc;
+    }
+    40% {
+      transform: translateY(-8px) scale(1.2);
+      color: #22d3ee;
+      text-shadow: 0 0 18px rgba(34, 211, 238, 0.95);
+    }
+    70% {
+      transform: translateY(2px) scale(0.96);
+      color: #34d399;
+      text-shadow: 0 0 12px rgba(52, 211, 153, 0.8);
+    }
+    100% {
+      transform: translateY(0) scale(1);
+      color: #f8fafc;
+      text-shadow: 0 0 10px rgba(34, 211, 238, 0.18);
+    }
+  }
+
+  @keyframes typedCharOut {
+    0% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.5) translateY(-8px);
     }
   }
 </style>
@@ -672,12 +791,179 @@ const keyboardRows: KeyItem[][] = [
   let noiseBuffer: AudioBuffer | null = null;
 
   const chassis = document.getElementById('interactive-keyboard');
-  const keyDisplay = document.getElementById('active-key-display');
+  const typedOutputLabel = document.getElementById('typed-output-label');
+  const typedCharsContainer = document.getElementById('typed-chars');
+  const typedPlaceholder = document.getElementById('typed-placeholder');
+  const typedHint = document.getElementById('typed-hint');
+  const typedClearBtn = document.getElementById('typed-clear-btn');
   const capsLed = document.getElementById('caps-led');
   const knobDial = document.getElementById('rotary-knob-dial');
   const knobReadout = document.getElementById('knob-vol-readout');
   const rgbToggleBtn = document.getElementById('rgb-toggle-btn');
   const rgbModeLabel = document.getElementById('rgb-mode-label');
+
+  const MAX_TYPED_CHARS = 42;
+  let waveCleanupTimer: number | undefined;
+  const holdClearTimers = new Map<string, number>();
+
+  const SHIFT_DIGIT_MAP: Record<string, string> = {
+    Digit1: '!',
+    Digit2: '@',
+    Digit3: '#',
+    Digit4: '$',
+    Digit5: '%',
+    Digit6: '^',
+    Digit7: '&',
+    Digit8: '*',
+    Digit9: '(',
+    Digit0: ')',
+  };
+
+  const SYMBOL_MAP: Record<string, [string, string]> = {
+    Backquote: ['`', '~'],
+    Minus: ['-', '_'],
+    Equal: ['=', '+'],
+    BracketLeft: ['[', '{'],
+    BracketRight: [']', '}'],
+    Backslash: ['\\', '|'],
+    Semicolon: [';', ':'],
+    Quote: ["'", '"'],
+    Comma: [',', '<'],
+    Period: ['.', '>'],
+    Slash: ['/', '?'],
+  };
+
+  function resolveTypedChar(code: string, isShift: boolean, isCaps: boolean): string | null {
+    if (code === 'Space') return ' ';
+    if (code.startsWith('Key') && code.length === 4) {
+      const ch = code.slice(3);
+      const upper = isShift !== isCaps;
+      return upper ? ch.toUpperCase() : ch.toLowerCase();
+    }
+    if (code.startsWith('Digit') && code.length === 6) {
+      return isShift ? (SHIFT_DIGIT_MAP[code] ?? code.slice(5)) : code.slice(5);
+    }
+    if (SYMBOL_MAP[code]) {
+      return isShift ? SYMBOL_MAP[code][1] : SYMBOL_MAP[code][0];
+    }
+    return null;
+  }
+
+  function syncTypedMeta() {
+    const count = typedCharsContainer?.children.length ?? 0;
+    const hasText = count > 0;
+    typedPlaceholder?.classList.toggle('hidden', hasText);
+    typedClearBtn?.classList.toggle('hidden', !hasText);
+    if (typedHint) {
+      typedHint.textContent = hasText
+        ? 'Ketuk teks untuk efek gelombang • Hold ⌫ / DEL: Hapus semua'
+        : 'Ketuk teks untuk demo animasi atau mulai mengetik';
+    }
+  }
+
+  function reindexTypedChars() {
+    if (!typedCharsContainer) return;
+    Array.from(typedCharsContainer.children).forEach((el, idx) => {
+      (el as HTMLElement).style.setProperty('--char-idx', String(idx));
+    });
+  }
+
+  function appendTypedChar(char: string) {
+    if (!typedCharsContainer) return;
+    while (typedCharsContainer.children.length >= MAX_TYPED_CHARS) {
+      typedCharsContainer.firstElementChild?.remove();
+    }
+    const span = document.createElement('span');
+    span.className = 'typed-char';
+    span.textContent = char === ' ' ? '\u00A0' : char;
+    typedCharsContainer.appendChild(span);
+    reindexTypedChars();
+    syncTypedMeta();
+  }
+
+  function backspaceTypedChar() {
+    if (!typedCharsContainer || !typedCharsContainer.lastElementChild) return;
+    const last = typedCharsContainer.lastElementChild as HTMLElement;
+    if (last.classList.contains('is-removing')) {
+      last.remove();
+      syncTypedMeta();
+      return;
+    }
+    last.classList.add('is-removing');
+    window.setTimeout(() => {
+      last.remove();
+      reindexTypedChars();
+      syncTypedMeta();
+    }, 130);
+  }
+
+  function clearTypedText(animate = false) {
+    if (!typedCharsContainer) return;
+    const chars = Array.from(typedCharsContainer.children) as HTMLElement[];
+    if (!animate || chars.length === 0) {
+      typedCharsContainer.innerHTML = '';
+      syncTypedMeta();
+      return;
+    }
+
+    chars.forEach((el) => el.classList.add('is-removing'));
+    window.setTimeout(() => {
+      if (typedCharsContainer) typedCharsContainer.innerHTML = '';
+      syncTypedMeta();
+    }, 145);
+  }
+
+  function clearHoldTimer(code: string) {
+    const timer = holdClearTimers.get(code);
+    if (timer) {
+      window.clearTimeout(timer);
+      holdClearTimers.delete(code);
+    }
+  }
+
+  function startHoldClearTimer(code: string) {
+    clearHoldTimer(code);
+    const timer = window.setTimeout(() => {
+      holdClearTimers.delete(code);
+      if ((typedCharsContainer?.children.length ?? 0) > 0) {
+        clearTypedText(true);
+        playKeyDownSound(code, currentSwitch);
+        if ('vibrate' in navigator) {
+          navigator.vibrate?.([10, 20, 10]);
+        }
+        showStatusHint('Semua teks dihapus');
+      }
+    }, 420);
+    holdClearTimers.set(code, timer);
+  }
+
+  function triggerTypedWave() {
+    if (!typedCharsContainer) return;
+    const chars = Array.from(typedCharsContainer.children) as HTMLElement[];
+    if (chars.length === 0) return;
+
+    if (waveCleanupTimer) window.clearTimeout(waveCleanupTimer);
+    chars.forEach((el, idx) => {
+      el.style.setProperty('--char-idx', String(idx));
+      el.classList.remove('is-waving');
+      void el.offsetWidth;
+      el.classList.add('is-waving');
+    });
+
+    waveCleanupTimer = window.setTimeout(() => {
+      chars.forEach((el) => el.classList.remove('is-waving'));
+    }, 650 + chars.length * 32);
+  }
+
+  function showStatusHint(text: string) {
+    if (!typedHint) return;
+    typedHint.textContent = text;
+    typedHint.classList.add('text-cyan-300');
+    window.setTimeout(() => {
+      typedHint.classList.remove('text-cyan-300');
+      syncTypedMeta();
+    }, 1400);
+  }
 
   const keyElements = new Map<string, HTMLElement>();
   const pressTimestamps = new Map<string, number>();
@@ -924,8 +1210,8 @@ const keyboardRows: KeyItem[][] = [
       knobReadout.classList.toggle('text-rose-400', isMuted);
       knobReadout.classList.toggle('text-cyan-300', !isMuted);
     }
-    if (statusText && keyDisplay) {
-      keyDisplay.textContent = statusText;
+    if (statusText) {
+      showStatusHint(statusText);
     }
   }
 
@@ -936,11 +1222,31 @@ const keyboardRows: KeyItem[][] = [
     syncMasterVolume();
     playKnobSound(false);
     if ('vibrate' in navigator) navigator.vibrate?.(5);
-    updateKnobUI(`VOL ${volume}%`);
+    updateKnobUI(`Volume: ${volume}%`);
   }
 
-  // 2. Animasi Tekan & Lepas Tombol dengan Minimum Durasi Visual untuk Sentuhan Cepat di Gadget
-  function pressKey(code: string) {
+  // 2. CapsLock LED — sync dengan keadaan CapsLock OS yang sesungguhnya
+  function applyCapsLedState(on: boolean) {
+    capsOn = on;
+    capsLed?.classList.toggle('bg-emerald-400', on);
+    capsLed?.classList.toggle('shadow-[0_0_8px_#34d399]', on);
+    capsLed?.classList.toggle('bg-slate-600', !on);
+  }
+
+  // Baca state CapsLock nyata dari OS pada event keyboard pertama setelah load/refresh
+  function initCapsLockState(e: KeyboardEvent) {
+    const realCaps = e.getModifierState('CapsLock');
+    if (realCaps !== capsOn) {
+      applyCapsLedState(realCaps);
+    }
+    window.removeEventListener('keydown', initCapsLockState, true);
+    window.removeEventListener('keyup', initCapsLockState, true);
+  }
+  window.addEventListener('keydown', initCapsLockState, true);
+  window.addEventListener('keyup', initCapsLockState, true);
+
+  // 2b. Animasi Tekan & Lepas Tombol dengan Minimum Durasi Visual untuk Sentuhan Cepat di Gadget
+  function pressKey(code: string, recordText = true) {
     const keyEl = keyElements.get(code);
     if (!keyEl) return;
 
@@ -955,19 +1261,34 @@ const keyboardRows: KeyItem[][] = [
     pressedKeys.add(code);
 
     if (code === 'CapsLock') {
-      capsOn = !capsOn;
-      capsLed?.classList.toggle('bg-emerald-400', capsOn);
-      capsLed?.classList.toggle('shadow-[0_0_8px_#34d399]', capsOn);
-      capsLed?.classList.toggle('bg-slate-600', !capsOn);
+      applyCapsLedState(!capsOn);
     }
 
     if (code === 'AudioVolumeMute') {
       isMuted = !isMuted;
-      updateKnobUI(isMuted ? 'Knob: Mute' : `Knob: ${volume}%`);
+      updateKnobUI(isMuted ? 'Suara: Mute (klik knob untuk aktifkan)' : `Volume: ${volume}%`);
       if (!isMuted) playKnobSound(true);
     } else {
-      if (keyDisplay) {
-        keyDisplay.textContent = isMuted ? `${code} (Muted)` : code;
+      if (recordText) {
+        if (code === 'Backspace' || code === 'Delete') {
+          backspaceTypedChar();
+          startHoldClearTimer(code);
+        } else if (code === 'Escape') {
+          clearTypedText(true);
+        } else if (code === 'Enter') {
+          if ((typedCharsContainer?.children.length ?? 0) > 0) {
+            triggerTypedWave();
+          }
+        } else {
+          const isShift = pressedKeys.has('ShiftLeft') || pressedKeys.has('ShiftRight');
+          const char = resolveTypedChar(code, isShift, capsOn);
+          if (char !== null) {
+            appendTypedChar(char);
+          }
+        }
+      }
+      if (isMuted) {
+        showStatusHint('Suara sedang Mute — klik knob untuk aktifkan');
       }
       playKeyDownSound(code, currentSwitch);
     }
@@ -978,6 +1299,7 @@ const keyboardRows: KeyItem[][] = [
   }
 
   function releaseKey(code: string) {
+    clearHoldTimer(code);
     const keyEl = keyElements.get(code);
     if (!keyEl) return;
 
@@ -1017,6 +1339,14 @@ const keyboardRows: KeyItem[][] = [
     if (!e.repeat) {
       pressKey(e.code);
     }
+
+    // Sync LED CapsLock dengan state OS yang sesungguhnya setiap kali ada keydown
+    // getModifierState('CapsLock') pada keydown CapsLock sudah mencerminkan state BARU
+    if (e.code === 'CapsLock') {
+      window.setTimeout(() => {
+        applyCapsLedState(e.getModifierState('CapsLock'));
+      }, 0);
+    }
   });
 
   window.addEventListener('keyup', (e) => {
@@ -1026,6 +1356,8 @@ const keyboardRows: KeyItem[][] = [
   window.addEventListener('blur', () => {
     activePointers.clear();
     pressedKeys.clear();
+    holdClearTimers.forEach((timer) => window.clearTimeout(timer));
+    holdClearTimers.clear();
     keyElements.forEach((el) => el.classList.remove('is-pressed'));
   });
 
@@ -1083,9 +1415,28 @@ const keyboardRows: KeyItem[][] = [
       btn.classList.add('bg-cyan-600', 'text-white');
       btn.classList.remove('text-slate-400');
 
-      pressKey('Space');
+      pressKey('Space', false);
       window.setTimeout(() => releaseKey('Space'), 110);
+      showStatusHint(`Mode suara: ${selected.toUpperCase()}`);
     });
+  });
+
+  // 5B. Interaksi Klik / Sentuh pada Label Teks Hasil Ketikan
+  typedOutputLabel?.addEventListener('click', () => {
+    if ((typedCharsContainer?.children.length ?? 0) === 0) {
+      const sample = 'Fantech MK913';
+      sample.split('').forEach((ch, idx) => {
+        window.setTimeout(() => appendTypedChar(ch), idx * 45);
+      });
+      window.setTimeout(() => triggerTypedWave(), sample.length * 45 + 60);
+    } else {
+      triggerTypedWave();
+    }
+  });
+
+  typedClearBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    clearTypedText();
   });
 
   // 6. Selector Varian Warna (Saturn Grey / Mercury Black)
@@ -1103,7 +1454,7 @@ const keyboardRows: KeyItem[][] = [
       btn.classList.remove('text-slate-400');
 
       playKnobSound(true);
-      if (keyDisplay) keyDisplay.textContent = theme === 'saturn' ? 'Saturn' : 'Mercury';
+      showStatusHint(theme === 'saturn' ? 'Varian: Saturn Grey' : 'Varian: Mercury Black');
     });
   });
 
@@ -1114,7 +1465,7 @@ const keyboardRows: KeyItem[][] = [
     if (chassis) chassis.dataset.rgb = mode.id;
     if (rgbModeLabel) rgbModeLabel.textContent = mode.label;
     playKnobSound(true);
-    if (keyDisplay) keyDisplay.textContent = `RGB: ${mode.label}`;
+    showStatusHint(`Mode RGB: ${mode.label}`);
   });
 
   // 8. Animasi Showcase Iklan Produk:
